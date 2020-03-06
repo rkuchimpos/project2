@@ -53,7 +53,6 @@ protected [sql] final class GeneralDiskHashedRelation(partitions: Array[DiskPart
 
   override def getIterator(): Iterator[DiskPartition] = {
     /* IMPLEMENT THIS METHOD */
-    println(partitions.size)
     partitions.iterator
   }
 
@@ -155,7 +154,6 @@ private[sql] class DiskPartition (
         if (!chunkSizeIterator.hasNext) {
           false
         } else {
-          println("returning true")
           val chunkSize = chunkSizeIterator.next()
           byteArray = CS143Utils.getNextChunkBytes(inStream, chunkSize, byteArray)
           val rowList = CS143Utils.getListFromBytes(byteArray)
@@ -175,8 +173,10 @@ private[sql] class DiskPartition (
     */
   def closeInput() = {
     /* IMPLEMENT THIS METHOD */
-    spillPartitionToDisk()
-    data.clear()
+    if (!data.isEmpty) {
+      spillPartitionToDisk()
+      data.clear()
+    }
     outStream.close()
     inputClosed = true
   }

@@ -35,6 +35,7 @@ class DiskPartitionSuite extends FunSuite {
 
     val data: Array[Row] = partition.getData.toArray
     (1 to 500).foreach((x: Int) => assert(data.contains(Row(x))))
+    assert(data.size == 500)
   }
 
   test ("close input") {

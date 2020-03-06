@@ -53,6 +53,7 @@ protected [sql] final class GeneralDiskHashedRelation(partitions: Array[DiskPart
 
   override def getIterator(): Iterator[DiskPartition] = {
     /* IMPLEMENT THIS METHOD */
+    println(partitions.size)
     partitions.iterator
   }
 
@@ -137,7 +138,6 @@ private[sql] class DiskPartition (
 
       override def hasNext() = {
         /* IMPLEMENT THIS METHOD */
-        println("HASNEXT CALLED!!!!!!!!!!1")
         if (currentIterator.hasNext) {
           true
         } else {
@@ -155,6 +155,7 @@ private[sql] class DiskPartition (
         if (!chunkSizeIterator.hasNext) {
           false
         } else {
+          println("returning true")
           val chunkSize = chunkSizeIterator.next()
           byteArray = CS143Utils.getNextChunkBytes(inStream, chunkSize, byteArray)
           val rowList = CS143Utils.getListFromBytes(byteArray)
@@ -214,16 +215,19 @@ private[sql] object DiskHashedRelation {
               size: Int = 64,
               blockSize: Int = 64000) = {
     /* IMPLEMENT THIS METHOD */
-    val partitions: Array[DiskPartition] = new Array[DiskPartition](size)
-    var count = 0
-    for (tempRow <- input) {
-      val key = keyGenerator.apply(tempRow).hashCode() % size
-      val partition: DiskPartition = new DiskPartition("temp_file_" + count, blockSize)
-      partition.insert(tempRow)
-      partition.closeInput()
-      partitions(key) = partition
-      count += 1
+    // Initalize empty partitions
+    val partitions:Array[DiskPartition] = new Array[DiskPartition](size)
+    (0 until size).foreach(
+      (i: Int) => partitions(i) = new DiskPartition("temp_file_" + i, blockSize)
+    )
+    // Assign each row to one partition based on its hash
+    for (row <- input) {
+      val key = keyGenerator(row).hashCode() % size
+      partitions(key).insert(row)
     }
-    new GeneralDiskHashedRelation(partitions)
+    // Close partition input
+    partitions.foreach((partition: DiskPartition) => partition.closeInput())
+    val relation:GeneralDiskHashedRelation = new GeneralDiskHashedRelation(partitions)
+    relation
   }
 }

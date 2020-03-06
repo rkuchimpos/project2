@@ -45,9 +45,8 @@ class DiskHashedRelationSuite extends FunSuite {
    test ("empty input") {
     val data: ArraySeq[Row] = new ArraySeq[Row](0)
     val hashedRelation: DiskHashedRelation = DiskHashedRelation(data.iterator, keyGenerator)
-
     for (partition <- hashedRelation.getIterator()) {
-      println("DEBUG: " + partition.getData() == null)
+      println("1 " + (partition == null))
       assert(!partition.getData.hasNext)
     }
 

@@ -47,6 +47,7 @@ class DiskHashedRelationSuite extends FunSuite {
     val hashedRelation: DiskHashedRelation = DiskHashedRelation(data.iterator, keyGenerator)
 
     for (partition <- hashedRelation.getIterator()) {
+      println("DEBUG: " + partition.getData() == null)
       assert(!partition.getData.hasNext)
     }
 

@@ -51,7 +51,7 @@ private[sql] sealed trait DiskHashedRelation {
 protected [sql] final class GeneralDiskHashedRelation(partitions: Array[DiskPartition])
   extends DiskHashedRelation with Serializable {
 
-  override def getIterator() = {
+  override def getIterator(): Iterator[DiskPartition] = {
     /* IMPLEMENT THIS METHOD */
     partitions.iterator
   }
@@ -130,8 +130,6 @@ private[sql] class DiskPartition (
       val chunkSizeIterator: Iterator[Int] = chunkSizes.iterator().asScala
       var byteArray: Array[Byte] = null
 
-      var cnt = 0
-
       override def next() = {
         /* IMPLEMENT THIS METHOD */
         currentIterator.next()
@@ -139,6 +137,7 @@ private[sql] class DiskPartition (
 
       override def hasNext() = {
         /* IMPLEMENT THIS METHOD */
+        println("HASNEXT CALLED!!!!!!!!!!1")
         if (currentIterator.hasNext) {
           true
         } else {
@@ -215,6 +214,16 @@ private[sql] object DiskHashedRelation {
               size: Int = 64,
               blockSize: Int = 64000) = {
     /* IMPLEMENT THIS METHOD */
-    null
+    val partitions: Array[DiskPartition] = new Array[DiskPartition](size)
+    var count = 0
+    for (tempRow <- input) {
+      val key = keyGenerator.apply(tempRow).hashCode() % size
+      val partition: DiskPartition = new DiskPartition("temp_file_" + count, blockSize)
+      partition.insert(tempRow)
+      partition.closeInput()
+      partitions(key) = partition
+      count += 1
+    }
+    new GeneralDiskHashedRelation(partitions)
   }
 }

@@ -60,4 +60,11 @@ class CS143UtilsSuite extends FunSuite {
 
     assert(CS143Utils.getUdfFromExpressions(attributes) == udf)
   }
+
+  test("sequence with 1 UDF in middle") {
+    val udf: ScalaUdf = new ScalaUdf((i: Int) => i + 1, IntegerType, Seq(studentAttributes(0)))
+    val attributes: Seq[Expression] = Seq() ++ Seq(udf) ++ studentAttributes
+
+    assert(CS143Utils.getUdfFromExpressions(attributes) == udf)
+  }
 }

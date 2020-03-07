@@ -129,7 +129,12 @@ object CS143Utils {
     */
   def getUdfFromExpressions(expressions: Seq[Expression]): ScalaUdf = {
     /* IMPLEMENT THIS METHOD */
-    null
+    val udfExps: Seq[Expression] = expressions.filter((exp: Expression) => exp.isInstanceOf[ScalaUdf])
+    if (udfExps.nonEmpty) {
+      udfExps.last.asInstanceOf[ScalaUdf]
+    } else {
+      null
+    }
   }
 
   /**

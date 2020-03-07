@@ -240,7 +240,6 @@ object CachingIteratorGenerator {
         val postUdfAttributes = postUdfProjection(row)
         val cacheKey = cacheKeyProjection(row)
         if (cache.containsKey(cacheKey)) {
-          println("CACHE HIT")
           val cachedUdfAttribute = cache.get(cacheKey)
           Row.fromSeq(preUdfAttributes ++ cachedUdfAttribute ++ postUdfAttributes)
         } else {

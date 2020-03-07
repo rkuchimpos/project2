@@ -44,7 +44,13 @@ class CS143UtilsSuite extends FunSuite {
 
     val udf: ScalaUdf = new ScalaUdf((sid: Int) => sid + 1, IntegerType, Seq(studentAttributes(0)))
 
-    val result: Iterator[Row] = CachingIteratorGenerator(studentAttributes, udf, Seq(studentAttributes(1)), Seq(), studentAttributes)(list.iterator)
+    val result: Iterator[Row] = CachingIteratorGenerator(
+      studentAttributes, // cacheKeys
+      udf, // udf
+      Seq(studentAttributes(1)), // preUdfExpressions
+      Seq(), // postUdfExpressions
+      studentAttributes // inputSchema
+    )(list.iterator)
 
     assert(result.hasNext)
 

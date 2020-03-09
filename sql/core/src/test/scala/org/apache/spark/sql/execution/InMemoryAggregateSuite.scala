@@ -52,7 +52,6 @@ class InMemoryAggregateSuite extends FunSuite with BeforeAndAfter {
 
     val aggregate = new SpillableAggregate(false, Seq(attributes(1)), Seq(attributes(1), Alias(exp, exp.toString)()), plan)
     val answer = aggregate.execute().collect().toSeq
-    println("HERE")
     assert(answer.map(r => (r.getInt(0), r.getLong(1))).sortBy(_._1) == Seq((1, 3L), (2, 3L), (3, 2L), (4, 2L)))
   }
 }

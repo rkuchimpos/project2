@@ -146,7 +146,15 @@ case class SpillableAggregate(
       private def aggregate(): Iterator[Row] = {
         /* IMPLEMENT THIS METHOD */
         if (groupingExpressions.isEmpty) {
-          null
+          val aggFn = newAggregatorInstance()
+          while (input.hasNext) {
+            val currentRow: Row = data.next()
+            aggFn.update(currentRow)
+          }
+          val resultRow: GenericMutableRow = new GenericMutableRow(1)
+          resultRow(0) = aggFn.eval()
+          val postAggregationProjection = CS143Utils.getNewProjection(resultExpression, Seq(aggregatorSchema))
+          Iterator(postAggregationProjection(resultRow))
         } else {
           var currentRow: Row = null
           while (input.hasNext) {

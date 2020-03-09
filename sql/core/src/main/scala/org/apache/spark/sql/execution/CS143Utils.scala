@@ -270,12 +270,16 @@ object AggregateIteratorGenerator {
 
       def hasNext() = {
         /* IMPLEMENT THIS METHOD */
-        false
+        input != null && input.hasNext
       }
 
       def next() = {
         /* IMPLEMENT THIS METHOD */
-        null
+        val currentEntry = input.next
+        val currentGroup: Row = currentEntry._1
+        val currentBuffer = currentEntry._2
+        val evaluatedGroup: Row = Row(currentBuffer.eval(EmptyRow))
+        postAggregateProjection(CS143Utils.rowsConcatenator(evaluatedGroup, currentGroup))
       }
     }
   }
